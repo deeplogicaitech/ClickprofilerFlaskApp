@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Uploader</title>
+    <!-- Tabler UI CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+    <style>
+        :root {
+            font-size: 15px;
+        }
+
+        .alert {
+            transition: opacity 0.5s;
+        }
+
+        .alert.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Initially hide the error card */
+        #error-card {
+            display: none;
+        }
+
+        .wobble {
+            /* Start the shake animation and make the animation last for 0.5 seconds */
+            animation: wobble 0.2s ease-in-out 0s 2;
+
+            /* When the animation is finished, start again */
+            animation-iteration-count: 1;
+        }
+
+        @keyframes wobble {
+            0% {
+                margin-left: 0rem;
+            }
+            25% {
+                margin-left: 0.5rem;
+            }
+            75% {
+                margin-left: -0.5rem;
+            }
+            100% {
+                margin-left: 0rem;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card w-100 shadow-sm">
+                    <div class="card-header"><h3 class="card-title">Upload files</h3></div>
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="card-body">
+                        <div class="form-group">
+                            <label for="clickprofiler"><b>Clickprofiler CSV file</b></label>
+                            <input type="file" class="form-control mt-2" name="clickprofiler" id="clickprofiler" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="mappings"><b>Mappings CSV file</b></label>
+                            <input type="file" class="form-control mt-2" name="mappings" id="mappings" required>
+                        </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Upload Files</button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if message %}
+                <div class="mt-3 alert alert-success">
+                    {{ message }}
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="mt-3 alert alert-dismissible wobble" id="error-card">
+                    {{ error }}
+                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JS to redirect to homepage if page is refreshed -->
+    <script>
+        // Function to check if the page is refreshed
+        function isPageRefreshed() {
+            return performance.navigation.type === 1;
+        }
+
+        // Redirect to the home page if the page is refreshed
+        if (isPageRefreshed()) {
+            window.location.href = "/"; // Replace "/" with the URL of your home page
+        }
+    </script>
+
+    <!-- Tabler UI JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+    <script>
+        // Show the error card and then remove it after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorCard = document.getElementById('error-card');
+            if (errorCard) {
+                errorCard.style.display = 'block'; // Show the error card
+                setTimeout(function() {
+                    errorCard.classList.add('fade-out'); // Apply the fade-out class
+                    setTimeout(function() {
+                        errorCard.parentNode.removeChild(errorCard); // Remove the card from its parent node
+                    }, 500);
+                }, 5000);
+            }
+        });
+    </script>
+    <script>
+        // Add client-side validation for file inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    const allowedExtensions = ['csv', 'xls', 'xlsx'];
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        alert('Invalid file format. Please upload CSV or Excel files only.');
+                        this.value = ''; // Clear the input field to allow reselection
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

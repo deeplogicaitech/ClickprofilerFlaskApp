@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Uploader</title>
+    <!-- Tabler UI CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+
+    <!-- JQUERY JS -->
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+
+    <!-- Clipboard JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+
+    <!-- Custom CSS styles for the card and table -->
+    <style>
+        :root {
+            font-size: 15px;
+        }
+
+        /* Wrap long text */
+        td {
+            word-wrap: break-word;
+            font-size: 12px;
+        }
+
+        /* Set fixed width for columns */
+        table {
+            table-layout: fixed;
+            width: 100%; /* Set table width to 100% to fill the card container */
+        }
+
+        /* Set a fixed height and enable vertical scrolling for the table container */
+        .card {
+            max-height: calc(100vh - 160px); /* Set the desired height as needed */
+            overflow-y: auto; /* Enable vertical scrolling */
+
+        }
+
+        .table {
+            margin-bottom: 0;
+            border-collapse: collapse;
+        }
+
+        .alert {
+            padding: 10px 15px 15px 15px;
+        }
+
+        .alert-title {
+            margin-bottom: 0.6rem;
+        }
+
+        thead {
+            box-shadow: inset 0px -1px 0 0px #ffffff, 0 1px #d5d5d5;
+            /* border-style: none; */
+        }
+
+        /*
+        .stick-nav {
+            position:'fixed' # fixed the nav bar positon
+            z-index:999  # hide the content
+        }
+
+        .sticky-top .sticky-top > tr:nth-child(1) {
+            border-color: none;
+            border-style: none;
+            border-width: none;
+        } */
+
+        .btn-secondary {
+            background-color: #1d273b;
+        }
+
+        .form-control {
+            border-color: #d2d2d2;
+        }
+
+        .container {
+            max-width: 75%;
+        }
+    </style>
+
+</head>
+<body>
+    {% if table_content %}
+
+    <div class="container py-3">
+        <div class="d-flex justify-content-end">
+           <div>
+                <a href="/" class="btn shadow-sm" style="margin-right:15px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left m-0" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <line x1="5" y1="12" x2="11" y2="18"></line>
+                        <line x1="5" y1="12" x2="11" y2="6"></line>
+                    </svg>
+                </a>
+           </div>
+
+            <div class="col-md-12">
+                {% if total_fields %}
+
+                <!--Card displaying total fields info-->
+                <div class="alert alert-success shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="alert-title">Mapped {{ total_fields }} field(s)</span>
+                        <div class="d-flex align-items-between" style="padding-top: 5px;">
+
+                            <!-- Search box -->
+                            <div class="input-icon">
+                                <span class="input-icon-addon">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/search -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
+                                  </span>
+                                <input id="search" type="text" value="" class="form-control text-muted" placeholder="Search.." aria-label="Search in website" autofocus>
+                            </div>
+
+                            <a href="#" id="copyToClipboard" class="btn btn-secondary mx-2" style="width: 170px;" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                <i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                        <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
+                                    </svg>
+                                </i>
+                                Copy to Clipboard
+                            </a>
+
+                            <!-- Download Excel button -->
+                            <a href="/download_excel" class="btn btn-primary" style="width: 170px;">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                                    <path d="M7 11l5 5l5 -5"></path>
+                                    <path d="M12 4l0 12"></path>
+                                    </svg>
+                                </i>
+                                Download Excel file
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Display file info -->
+                    <div class="text-muted">
+                        <span><b>Clickprofiler file:</b> {{ cp_file }}</span>
+                        <br>
+                        <span><b>Mappings file:</b> {{ map_file }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Large card containing the table -->
+                <div class="card shadow-sm">
+                    {{ table_content | safe }}
+                </div>
+            </div>
+
+            <div>
+                <!-- Empty div -->
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- JS to redirect to homepage if page is refreshed -->
+    <script>
+        // Function to check if the page is refreshed
+        function isPageRefreshed() {
+            return performance.navigation.type === 1;
+        }
+
+        // Redirect to the home page if the page is refreshed
+        if (isPageRefreshed()) {
+            window.location.href = "/"; // Replace "/" with the URL of your home page
+        }
+    </script>
+
+    <!-- Tabler UI JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+
+    <!-- Custom JS for search functionality -->
+    <script>
+        $(document).ready(function () {
+            $("#search").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#data-table tbody tr").filter(function () {
+                    // Show all rows if the search box is empty
+                    if (!value) {
+                        $(this).show();
+                        return;
+                    }
+                    // Otherwise, toggle row visibility based on the search value
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+
+    <!-- Custom JS for copying table content -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize clipboard.js
+            var clipboard = new ClipboardJS('#copyToClipboard', {
+                target: function(trigger) {
+                    return document.getElementById('data-table');
+                }
+            });
+
+            var originalIcon = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
+                </svg>
+            `;
+
+            // Change the button color on success
+            clipboard.on('success', function(e) {
+                e.clearSelection();
+                var copyButton = document.getElementById('copyToClipboard');
+
+                // Store the current icon HTML content
+                var currentIcon = copyButton.innerHTML;
+
+                copyButton.classList.remove('btn-secondary');
+                copyButton.classList.add('btn-success');
+                copyButton.innerHTML = 'Copied!';
+
+                // Restore the original icon after a delay
+                setTimeout(function() {
+                    copyButton.innerHTML = originalIcon + 'Copy to Clipboard';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-secondary');
+                }, 1000);
+            });
+
+            // Change the button color to red if there is an error
+            clipboard.on('error', function(e) {
+                e.clearSelection();
+                var copyButton = document.getElementById('copyToClipboard');
+                copyButton.classList.remove('btn-secondary');
+                copyButton.classList.add('btn-danger');
+                copyButton.innerHTML = 'Copy Error!';
+                setTimeout(function() {
+                    copyButton.innerHTML = 'Copy to Clipboard';
+                    copyButton.classList.remove('btn-danger');
+                    copyButton.classList.add('btn-secondary');
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
