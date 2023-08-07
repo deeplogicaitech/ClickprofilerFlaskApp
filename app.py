@@ -115,5 +115,10 @@ def map_keys_and_values(clickprofiler_list, mappings_data):
 def download_excel():
     return send_file("mapped_clickprofiler.xlsx", as_attachment=True)
 
+# Handle 404 errors and display the custom 404 page
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
 if __name__ == '__main__':
     app.run(debug=True)
