@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>File Uploader</title>
+    <title>Mapped Clickprofiler</title>
     <!-- Tabler UI CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
 
@@ -50,7 +50,7 @@
         }
 
         thead {
-            box-shadow: inset 0px -1px 0 0px #ffffff, 0 1px #d5d5d5;
+            /* box-shadow: inset 0px -1px 0 0px #ffffff, 0 1px #d5d5d5; */
             /* border-style: none; */
         }
 
@@ -76,6 +76,22 @@
 
         .container {
             max-width: 75%;
+        }
+
+        .inner-table::-webkit-scrollbar {
+            display: none;  /* Safari and Chrome */
+            scrollbar-gutter: none;
+        }
+
+        .inner-table {
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .table-secondary {
+            --tblr-table-bg: #e2e8f0;
+            --tblr-table-striped-bg: #e2e8f0;
+            --tblr-table-color: #1d273b9e;
+            --tblr-table-striped-color: #1d273b9e;
         }
     </style>
 
@@ -150,7 +166,38 @@
 
                 <!-- Large card containing the table -->
                 <div class="card shadow-sm">
-                    {{ table_content | safe }}
+                    {# {{ table_content | safe}} #}
+                    <table class="table table-vcenter table-bordered">
+                        <thead id="table-header">
+                            <tr style="text-align: right;">
+                                <th>LABEL</td>
+                                <th>GERMAN DESC</td>
+                                <th>GERMAN KEY</td>
+                                <th>GERMAN VALUE</td>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div class="inner-table" style="overflow-y: auto;">
+                        <table id="data-table" class="table table-vcenter table-bordered table-striped">
+                            {% for row in table_content %}
+                            {% if row[2] == '-' and row[3] == '-' %}
+                            <tr class="table-secondary">
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>{{ row[3] }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>{{ row[3] }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -201,8 +248,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize clipboard.js
             var clipboard = new ClipboardJS('#copyToClipboard', {
-                target: function(trigger) {
-                    return document.getElementById('data-table');
+                text: function(trigger) {
+                    var headerCells = document.querySelectorAll('#table-header th');
+                    var headerData = Array.from(headerCells).map(cell => cell.innerText);
+                    var rows = document.querySelectorAll('#data-table tr');
+                    var data = [];
+
+                    // Add header data to the beginning of the data array
+                    data.push(headerData.join('\t'));
+
+                    for (var i = 0; i < rows.length; i++) {
+                        var cells = rows[i].querySelectorAll('td');
+                        var rowData = [];
+                        for (var j = 0; j < cells.length; j++) {
+                            rowData.push(cells[j].innerText);
+                        }
+                        data.push(rowData.join('\t'));
+                    }
+
+                    return data.join('\n');
                 }
             });
 

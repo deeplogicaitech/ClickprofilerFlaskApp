@@ -41,7 +41,9 @@ def index():
 
             mapped_data_df.to_excel('mapped_clickprofiler.xlsx', index=False)
 
-            return render_template('table.html', table_content=html_table, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
+            # return render_template('table.html', table_content=html_table, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
+
+            return render_template('table.html', table_content=mapped_data, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
 
         except Exception as e:
             print(e)
