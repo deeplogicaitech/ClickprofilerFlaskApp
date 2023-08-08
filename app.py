@@ -34,8 +34,9 @@ def index():
             labels = process_mappings_file(mappings_filename)
 
             # Map German keys and values to English labels using the mappings data
-            mapped_data = map_keys_and_values(clickprofiler_list, labels)
+            mapped_data, mapped_fields = map_keys_and_values(clickprofiler_list, labels)
             total_fields = len(mapped_data)
+
             mapped_data_df = pd.DataFrame(mapped_data, columns = ['Label', 'German Desc', 'German Key', 'German Value'])
             html_table = mapped_data_df.to_html(classes='table table-vcenter table-striped table-bordered', index=False, escape=False, border=False, table_id="data-table").replace('<thead>', '<thead class="sticky-top">')
 
@@ -43,7 +44,7 @@ def index():
 
             # return render_template('table.html', table_content=html_table, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
 
-            return render_template('table.html', table_content=mapped_data, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
+            return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
 
         except Exception as e:
             print(e)
@@ -94,12 +95,14 @@ def process_mappings_file(mappings_file):
 
 def map_keys_and_values(clickprofiler_list, mappings_data):
     mapped_data = []
+    total_mapped_fields = 0
 
     for labelkv in mappings_data:
         for item in clickprofiler_list:
             if item[0] in labelkv['desc'] and not labelkv['used'] and not item[3]:
                 templ = [labelkv['lbl'], item[0], item[1], item[2]]
                 mapped_data.append(templ)
+                total_mapped_fields += 1
                 labelkv['used'] = True
                 item[3] = True
                 break
@@ -109,7 +112,7 @@ def map_keys_and_values(clickprofiler_list, mappings_data):
             labelkv['used'] = True
             mapped_data.append(temp)
 
-    return mapped_data
+    return mapped_data, total_mapped_fields
 
 @app.route('/download_excel')
 def download_excel():

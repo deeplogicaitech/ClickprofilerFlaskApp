@@ -32,7 +32,7 @@
         /* Set fixed width for columns */
         table {
             table-layout: fixed;
-            width: 100%; /* Set table width to 100% to fill the card container */
+
         }
 
         /* Set a fixed height and enable vertical scrolling for the table container */
@@ -119,12 +119,12 @@
            </div>
 
             <div class="col-md-12">
-                {% if total_fields %}
+                {% if mapped_fields %}
 
                 <!--Card displaying total fields info-->
                 <div class="alert alert-success shadow-sm">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="alert-title">Mapped {{ total_fields }} field(s)</span>
+                        <span class="alert-title">Mapped {{ mapped_fields }} of {{ total_fields }} field(s)</span>
                         <div class="d-flex align-items-between" style="padding-top: 5px;">
 
                             <!-- Search box -->
@@ -176,6 +176,7 @@
                     <table class="table table-vcenter table-bordered">
                         <thead id="table-header">
                             <tr style="text-align: right;">
+                                <th style="width: 3rem;">S.No</th>
                                 <th>LABEL</td>
                                 <th>GERMAN DESC</td>
                                 <th>GERMAN KEY</td>
@@ -188,6 +189,7 @@
                             {% for row in table_content %}
                             {% if row[2] == '-' and row[3] == '-' %}
                             <tr class="table-secondary">
+                                <td style="width: 3rem;">{{ loop.index }}</td>
                                 <td>{{ row[0] }}</td>
                                 <td>{{ row[1] }}</td>
                                 <td>{{ row[2] }}</td>
@@ -195,6 +197,7 @@
                             </tr>
                             {% else %}
                             <tr>
+                                <td style="width: 3rem;">{{ loop.index }}</td>
                                 <td>{{ row[0] }}</td>
                                 <td>{{ row[1] }}</td>
                                 <td>{{ row[2] }}</td>
@@ -216,7 +219,7 @@
     {% endif %}
 
     <!-- JS to redirect to homepage if page is refreshed -->
-    <script>
+    <!-- <script>
         // Function to check if the page is refreshed
         function isPageRefreshed() {
             return performance.navigation.type === 1;
@@ -226,7 +229,7 @@
         if (isPageRefreshed()) {
             window.location.href = "/"; // Replace "/" with the URL of your home page
         }
-    </script>
+    </script> -->
 
     <!-- Tabler UI JS -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
