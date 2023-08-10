@@ -2,13 +2,15 @@ import csv
 from flask import Flask, render_template, request, send_file
 import os
 import pandas as pd
+from pathlib import Path
 
 app = Flask(__name__)
 
 # Directory to store uploaded files
 UPLOADS_DIRECTORY = 'uploads'
 
-excel_df = None
+# Create the uploads directory if it doesn't exist
+Path(UPLOADS_DIRECTORY).mkdir(parents=True, exist_ok=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -124,4 +126,4 @@ def not_found_error(error):
     return render_template('404.html'), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port = 5000)
