@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, send_file
 import os
 import pandas as pd
 from pathlib import Path
+import traceback
+import re
 
 app = Flask(__name__)
 
@@ -11,6 +13,14 @@ UPLOADS_DIRECTORY = 'uploads'
 
 # Create the uploads directory if it doesn't exist
 Path(UPLOADS_DIRECTORY).mkdir(parents=True, exist_ok=True)
+
+def extract_filename(path):
+    # Match the last part of the path that doesn't contain any path separators
+    filename_match = re.search(r'[^\\/]+$', path)
+    if filename_match:
+        return filename_match.group()
+    else:
+        return None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -39,17 +49,15 @@ def index():
             mapped_data, mapped_fields = map_keys_and_values(clickprofiler_list, labels)
             total_fields = len(mapped_data)
 
+            # Create a Pandas dataframe from the mapped data and save it to an Excel file
             mapped_data_df = pd.DataFrame(mapped_data, columns = ['Label', 'German Desc', 'German Key', 'German Value'])
-            html_table = mapped_data_df.to_html(classes='table table-vcenter table-striped table-bordered', index=False, escape=False, border=False, table_id="data-table").replace('<thead>', '<thead class="sticky-top">')
-
             mapped_data_df.to_excel('mapped_clickprofiler.xlsx', index=False)
 
-            # return render_template('table.html', table_content=html_table, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
-
-            return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, cp_file=clickprofiler_filename.split('\\')[1], map_file=mappings_filename.split('\\')[1])
+            return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, cp_file=extract_filename(clickprofiler_filename), map_file=extract_filename(mappings_filename))
 
         except Exception as e:
             print(e)
+            traceback.print_exc()
             error = "Error processing files. Please check the files and try again."
 
     return render_template('index.html', message=message, error=error)
@@ -126,4 +134,4 @@ def not_found_error(error):
     return render_template('404.html'), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, port = 5000)
+    app.run(debug=True, port = 5001)
