@@ -32,12 +32,11 @@
         /* Set fixed width for columns */
         table {
             table-layout: fixed;
-
         }
 
         /* Set a fixed height and enable vertical scrolling for the table container */
         .card {
-            max-height: calc(100vh - 160px); /* Set the desired height as needed */
+            max-height: calc(100vh - 155px); /* Set the desired height as needed */
             overflow-y: auto; /* Enable vertical scrolling */
 
         }
@@ -88,6 +87,30 @@
             text-decoration-style: dotted;
             text-underline-position: under;
         }
+
+        .toggle-inactive {
+            color: var(--tblr-primary-bg);
+            background-color: #f1f5f9;
+            border-color: #f1f5f9;
+        }
+
+        .toggle-inactive:hover {
+            color: var(--tblr-primary-bg);
+            background-color: #f1f5f9;
+            border-color: #f1f5f9;
+        }
+
+        .toggle-active {
+            color: #0054a6;
+            background-color: #e9f0f9;
+            border-color: #0054a6;
+        }
+
+        .toggle-active:hover {
+            color: #0054a6;
+            background-color: #e9f0f9;
+            border-color: #0054a6;
+        }
     </style>
 
 </head>
@@ -122,7 +145,7 @@
                                     <!-- Download SVG icon from http://tabler-icons.io/i/search -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
                                   </span>
-                                <input id="search" type="text" value="" class="form-control text-muted" placeholder="Search.." aria-label="Search in website" autofocus>
+                                <input id="search" type="text" value="" class="form-control text-muted" placeholder="Search.." aria-label="Search in website" autocomplete="off" autofocus>
                             </div>
 
                             <a href="#" id="copyToClipboard" class="btn btn-secondary mx-2" style="width: 170px;" data-bs-toggle="tooltip" data-bs-placement="bottom">
@@ -151,10 +174,28 @@
                     </div>
 
                     <!-- Display file info -->
-                    <div class="text-muted">
-                        <span><b>Clickprofiler file:</b> {{ cp_file }}</span>
-                        <br>
-                        <span><b>Mappings file:</b> {{ map_file }}</span>
+                    <div class="text-muted d-flex justify-content-between align-items-end">
+                        <div>
+                            <span><b>Clickprofiler file:</b> {{ cp_file }}</span>
+                            <br>
+                            <span><b>Mappings file:</b> {{ map_file }}</span>
+                        </div>
+                        <button id="filterButton" class="btn ml-2 toggle-inactive" style="height: 25px; width: 170px; border-radius: 60px">
+                            <i class="outline-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z"></path>
+                                 </svg>
+                            </i>
+                            <i class="fill-icon" style="display: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3"></path>
+                                    <path d="M15 19l2 2l4 -4"></path>
+                                 </svg>
+                            </i>
+                            Filter empty rows
+                        </button>
                     </div>
                 </div>
                 {% endif %}
@@ -252,6 +293,43 @@
                     }
                     // Otherwise, toggle row visibility based on the search value
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+
+    <!-- Custom JS for filtering rows -->
+    <script>
+        $(document).ready(function() {
+            var filterToggle = false;
+            var filterButton = $('#filterButton');
+
+            $('#filterButton').click(function() {
+                filterToggle = !filterToggle;
+
+                if (filterToggle) {
+                    $(this).removeClass('toggle-inactive').addClass('toggle-active');
+                    filterButton.find('.outline-icon').hide();
+                    filterButton.find('.fill-icon').show();
+                } else {
+                    $(this).removeClass('toggle-active').addClass('toggle-inactive');
+                    filterButton.find('.outline-icon').show();
+                    filterButton.find('.fill-icon').hide();
+                }
+
+                $('#data-table tbody tr').each(function() {
+                    var thirdColumn = $(this).find('td:nth-child(4)').text().trim();
+                    var fourthColumn = $(this).find('td:nth-child(5)').text().trim();
+
+                    if (filterToggle) {
+                        if (thirdColumn === '' && fourthColumn === '') {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    } else {
+                        $(this).show();
+                    }
                 });
             });
         });
