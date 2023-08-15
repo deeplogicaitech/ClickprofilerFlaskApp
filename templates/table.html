@@ -111,6 +111,11 @@
             background-color: #e9f0f9;
             border-color: #0054a6;
         }
+
+        /* Add these styles to your CSS */
+        .btn-transition {
+            transition: background-color 0.5s, opacity 0.5s;
+        }
     </style>
 
 </head>
@@ -145,7 +150,7 @@
                                     <!-- Download SVG icon from http://tabler-icons.io/i/search -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
                                   </span>
-                                <input id="search" type="text" value="" class="form-control text-muted" placeholder="Search.." aria-label="Search in website" autocomplete="off" autofocus>
+                                <input id="search" type="text" value="" class="form-control text-muted" placeholder="Search" aria-label="Search in website" autocomplete="off" autofocus>
                             </div>
 
                             <a href="#" id="copyToClipboard" class="btn btn-secondary mx-2" style="width: 170px;" data-bs-toggle="tooltip" data-bs-placement="bottom">
@@ -375,25 +380,33 @@
                 e.clearSelection();
                 var copyButton = document.getElementById('copyToClipboard');
 
-                // Store the current icon HTML content
-                var currentIcon = copyButton.innerHTML;
+                // Add a class for the transition effect
+                copyButton.classList.add('btn-transition');
 
+                // Update button style and text
                 copyButton.classList.remove('btn-secondary');
                 copyButton.classList.add('btn-success');
                 copyButton.innerHTML = 'Copied!';
 
-                // Restore the original icon after a delay
+                // Restore the original icon and style after a delay
                 setTimeout(function() {
                     copyButton.innerHTML = originalIcon + 'Copy to Clipboard';
                     copyButton.classList.remove('btn-success');
                     copyButton.classList.add('btn-secondary');
+
+                    // Remove the transition class
+                    copyButton.classList.remove('btn-transition');
                 }, 1000);
             });
 
-            // Change the button color to red if there is an error
             clipboard.on('error', function(e) {
                 e.clearSelection();
                 var copyButton = document.getElementById('copyToClipboard');
+
+                // Add a class for the transition effect
+                copyButton.classList.add('btn-transition');
+
+                // Update button style and text
                 copyButton.classList.remove('btn-secondary');
                 copyButton.classList.add('btn-danger');
                 copyButton.innerHTML = 'Copy Error!';
@@ -401,6 +414,9 @@
                     copyButton.innerHTML = 'Copy to Clipboard';
                     copyButton.classList.remove('btn-danger');
                     copyButton.classList.add('btn-secondary');
+
+                    // Remove the transition class
+                    copyButton.classList.remove('btn-transition');
                 }, 1000);
             });
         });

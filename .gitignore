@@ -3,3 +3,8 @@ mapped_clickprofiler.xlsx
 .gitingore
 templates/index_bak.html
 templates/table_bak.html
+__pycache__/
+.vscode/
+temp/
+saved/
+saved_mappings.json

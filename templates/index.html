@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>File Uploader</title>
+    <title>Clickprofiler Mapper</title>
     <!-- Tabler UI CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
     <style>
@@ -18,6 +18,9 @@
 
         .alert {
             transition: opacity 0.5s;
+            z-index: 1000;
+            position: absolute;
+            top: 90%;
         }
 
         .alert.fade-out {
@@ -57,56 +60,242 @@
             text-decoration-style: dotted;
             text-underline-position: under;
         }
+
+        /* .scrollable-content {
+            overflow: overlay;
+            scrollbar-width: none;
+            max-height: 350px;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            display: none;
+        } */
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            height: 100vh; /* Take full viewport height */
+            padding-top: 1rem; /* Space on top */
+            padding-bottom: 1rem; /* Space on bottom */
+            overflow-y: hidden;
+        }
+
+        .upload-files-card,
+        .row-deck {
+            width: 100%;
+            max-width: 50%; /* You can adjust the width as needed */
+        }
+
+        .row-deck {
+            /* margin-top: auto; Push it to the bottom */
+            overflow-y: auto;
+        }
+
+        .box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #content {
+            overflow-y: auto;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0, black var(--top-mask-size, 0), black calc(100% - var(--bottom-mask-size, 0)), transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, black var(--top-mask-size, 0), black calc(100% - var(--bottom-mask-size, 0)), transparent 100%);
+            --top-mask-size: 0px;
+            --bottom-mask-size: 0px;
+        }
+
+        #content.is-top-overflowing {
+            --top-mask-size: 60px !important;
+        }
+
+        #content.is-bottom-overflowing {
+            padding-bottom: 20px;
+            --bottom-mask-size: 60px !important;
+        }
+
+        #deleteButton {
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .hover-card:hover #deleteButton {
+            visibility: visible;
+        }
+
+        #deleteButton > a {
+            --tblr-badge-padding-x: 1em;
+            --tblr-badge-padding-y: 0.5em;
+            transition: background-color 100ms linear;
+        }
+
+        #deleteButton > a:hover {
+            --tblr-bg-opacity: 1;
+            color: #fff !important;
+            background-color: rgba(var(--tblr-red-rgb), var(--tblr-bg-opacity)) !important;
+            text-decoration: none;
+        }
+
+        /* Styles for the divider container */
+        .hr-text {
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* Styles for the content within the divider */
+        .divider-content {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Styles for the divider text */
+        .divider-text {
+            margin-right: 0.4rem;
+            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Styles for the delete icon container */
+        .delete-icon-container {
+            width: 0;
+            overflow: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Styles for the delete icon */
+        .delete-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Show the delete icon container and move the delete icon on hover */
+        .divider-content:hover .divider-text {
+            color: transparent; /* Hide the text */
+        }
+
+        .divider-content:hover .divider-text {
+            color: #d63939;
+        }
+
+        .divider-content:hover .delete-icon-container {
+            width: 24px;  /* approximate width of the delete icon, you can adjust this value */
+        }
+
+        .divider-content:hover .delete-icon {
+            transform: translateX(0);
+        }
+
+        .hr-text.hr-text-right:before {
+            cursor: default;
+        }
+
     </style>
-
 </head>
+
 <body>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card w-100 shadow-sm">
-                    <div class="card-header"><h3 class="card-title">Upload files</h3></div>
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="card-body">
-                        <div class="form-group">
-                            <label for="clickprofiler"><b>Clickprofiler CSV file</b></label>
-                            <input type="file" class="form-control mt-2" name="clickprofiler" id="clickprofiler" required>
-                        </div>
-                        <div class="form-group mt-3">
-                            <label for="mappings"><b>Mappings CSV file</b></label>
-                            <input type="file" class="form-control mt-2" name="mappings" id="mappings" required>
-                        </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">
-                                <i>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
-                                        <path d="M7 9l5 -5l5 5"></path>
-                                        <path d="M12 4l0 12"></path>
-                                     </svg>
-                                </i>
-                                Upload Files
-                            </button>
-                        </div>
-                    </form>
+    <div class="container">
+        <div class="card w-100 shadow-sm upload-files-card">
+            <div class="card-header"><h3 class="card-title">Clickprofiler Mapper</h3></div>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="card-body">
+                <div class="form-group">
+                    <label for="clickprofiler"><b>Clickprofiler CSV file</b></label>
+                    <input type="file" class="form-control mt-2" name="clickprofiler" id="clickprofiler" required>
                 </div>
+                <div class="form-group mt-3">
+                    <label for="mappings"><b>Mappings CSV file</b></label>
+                    <input type="file" class="form-control mt-2" name="mappings" id="mappings" required>
+                </div>
+                <label class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="saveFilesCheckbox" name="savecheckbox">
+                    <span class="form-check-label">Save this mapping</span>
+                </label>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                                <path d="M7 9l5 -5l5 5"></path>
+                                <path d="M12 4l0 12"></path>
+                                </svg>
+                        </i>
+                        Upload Files
+                    </button>
+                </div>
+            </form>
+        </div>
 
-                {% if message %}
-                <div class="mt-3 alert alert-success">
-                    {{ message }}
+        <div id="savedFiles" class="row-deck box">
+            {% if saved_mappings %}
+            <div class="hr-text hr-text-right" style="margin: 2rem 0 1rem 0;">
+                <div class="divider-content">
+                    <a href="{{ url_for('delete_all_mappings') }}" style="text-decoration: none; color: #616876;">
+                        <div class="divider-text">Previous Mappings</div>
+                    </a>
+                    <div class="delete-icon-container">
+                        <a href="{{ url_for('delete_all_mappings') }}" style="color: inherit;">
+                            <i class="delete-icon" style="color: #d63939; margin-top: 1px"><svg style="--tblr-icon-size: 1rem;" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clear-all" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" >
+                                <!-- data-bs-toggle="tooltip" data-bs-placement="top" title="Delete all mappings" -->
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M8 6h12"></path>
+                                <path d="M6 12h12"></path>
+                                <path d="M4 18h12"></path>
+                            </svg></i>
+                        </a>
+                    </div>
                 </div>
-                {% endif %}
-
-                {% if error %}
-                <div class="mt-3 alert alert-dismissible wobble" id="error-card">
-                    {{ error }}
-                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+            <div class="scrollable-content" id="content">
+                {% for key, mapping in saved_mappings.items()|reverse %}
+                <div class="card mb-1 hover-card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="badge bg-blue-lt mb-1">ID: {{ key[20:]|upper }}</div>
+                            <div class="text-muted" style="font-size: smaller;">{{ mapping.timestamp|timeago }}</div>
+                        </div>
+                        <div id="dlContainer" class="d-flex justify-content-between">
+                            <div>
+                                <div><b>Clickprofiler file:</b> {{ mapping.cp_filename }}</div>
+                                <div><b>Mappings file:</b> {{ mapping.mp_filename }}</div>
+                            </div>
+                            <div id="deleteButton" style="margin-top: 1%;">
+                                <a href="{{ url_for('delete_mapping', key=key, cp=mapping.cp_filename, mp=mapping.mp_filename) }}" class="badge badge-pill bg-red-lt">
+                                Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('perform_mapping', key=key, cp=mapping.cp_filename, mp=mapping.mp_filename) }}" class="stretched-link"></a>
                 </div>
-                {% endif %}
+                {% endfor %}
 
             </div>
+            {% endif %}
+        </div>
+
+        {% if message %}
+        <div class="mt-3 alert alert-success">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="mt-3 alert alert-important alert-dismissible wobble shadow" id="error-card">
+            <i>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-exclamation-circle" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                    <path d="M12 9v4"></path>
+                    <path d="M12 16v.01"></path>
+                 </svg>
+            </i>
+            {{ error }}
+            <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+        </div>
+        {% endif %}
         </div>
     </div>
 
@@ -157,6 +346,49 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        function setClasses(el) {
+        const isScrollable = el.scrollHeight > el.clientHeight;
+
+        // GUARD: If element is not scrollable, remove all classes
+        if (!isScrollable) {
+            el.classList.remove('is-bottom-overflowing', 'is-top-overflowing');
+            return;
+        }
+
+        // Otherwise, the element is overflowing!
+        // Now we just need to find out which direction it is overflowing to (can be both)
+        const isScrolledToBottom = el.scrollHeight <= el.clientHeight + el.scrollTop;
+        const isScrolledToTop = isScrolledToBottom ? false : el.scrollTop === 0;
+        el.classList.toggle('is-bottom-overflowing', !isScrolledToBottom);
+        el.classList.toggle('is-top-overflowing', !isScrolledToTop);
+        }
+
+        document.querySelector('#content').addEventListener('scroll', (e) => {
+        const el = e.currentTarget;
+        setClasses(el);
+        });
+
+        setClasses(document.querySelector('#content'));
+    </script>
+
+    <script>
+        // JavaScript to update the text on hover
+        const divider = document.querySelector('.hr-text');
+        const dividerContent = document.querySelector('.divider-content');
+        const dividerText = dividerContent.querySelector('.divider-text');
+
+        const originalText = 'Previous Mappings';
+        const hoverText = 'Delete all mappings';
+
+        dividerContent.addEventListener('mouseover', () => {
+            dividerText.textContent = hoverText;
+        });
+
+        dividerContent.addEventListener('mouseout', () => {
+            dividerText.textContent = originalText;
         });
     </script>
 </body>
