@@ -1,123 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mapped Clickprofiler</title>
-    <!-- Tabler UI CSS and JS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+    <title>Mapping Results</title>
 
-    <!-- JQUERY JS -->
-    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery.min.js"></script> <!-- JQUERY JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script> <!-- Clipboard JS -->
 
-    <!-- Clipboard JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
-
-    <!-- Custom CSS styles for the card and table -->
-    <style>
-        @import url('https://rsms.me/inter/inter.css');
-        :root {
-            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
-        }
-    </style>
-    <style>
-        :root {
-            font-size: 15px;
-        }
-
-        /* Wrap long text */
-        td {
-            word-wrap: break-word;
-            font-size: 12px;
-        }
-
-        /* Set fixed width for columns */
-        table {
-            table-layout: fixed;
-        }
-
-        /* Set a fixed height and enable vertical scrolling for the table container */
-        .card {
-            max-height: calc(100vh - 155px); /* Set the desired height as needed */
-            overflow-y: auto; /* Enable vertical scrolling */
-
-        }
-
-        .table {
-            margin-bottom: 0;
-            border-collapse: collapse;
-        }
-
-        .alert {
-            padding: 10px 15px 15px 15px;
-        }
-
-        .alert-title {
-            margin-bottom: 0.6rem;
-        }
-
-        .btn-secondary {
-            background-color: #1d273b;
-            --tblr-btn-hover-bg: #5d6779;
-        }
-
-        .form-control {
-            border-color: #d2d2d2;
-        }
-
-        .container {
-            max-width: 75%;
-        }
-
-        .inner-table::-webkit-scrollbar {
-            display: none;  /* Safari and Chrome */
-            scrollbar-gutter: none;
-        }
-
-        .inner-table {
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .table-secondary {
-            --tblr-table-bg: #e2e8f0;
-            --tblr-table-striped-bg: #e2e8f0;
-            --tblr-table-color: #1d273b9e;
-            --tblr-table-striped-color: #1d273b9e;
-        }
-
-        u {
-            text-decoration-style: dotted;
-            text-underline-position: under;
-        }
-
-        .toggle-inactive {
-            color: var(--tblr-primary-bg);
-            background-color: #f1f5f9;
-            border-color: #f1f5f9;
-        }
-
-        .toggle-inactive:hover {
-            color: var(--tblr-primary-bg);
-            background-color: #f1f5f9;
-            border-color: #f1f5f9;
-        }
-
-        .toggle-active {
-            color: #0054a6;
-            background-color: #e9f0f9;
-            border-color: #0054a6;
-        }
-
-        .toggle-active:hover {
-            color: #0054a6;
-            background-color: #e9f0f9;
-            border-color: #0054a6;
-        }
-
-        /* Add these styles to your CSS */
-        .btn-transition {
-            transition: background-color 0.5s, opacity 0.5s;
-        }
-    </style>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css"> <!-- Tabler UI CSS-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- Favicon -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}"> <!-- Custom CSS for the table.html page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}"> <!-- Inter custom font -->
 </head>
 <body>
     {% if table_content %}
@@ -270,156 +162,18 @@
     {% endif %}
 
     <!-- JS to redirect to homepage if page is refreshed -->
-    <script>
-        // Function to check if the page is refreshed
-        function isPageRefreshed() {
-            return performance.navigation.type === 1;
-        }
-
-        // Redirect to the home page if the page is refreshed
-        if (isPageRefreshed()) {
-            window.location.href = "/"; // Replace "/" with the URL of your home page
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/refreshPage.js') }}"></script>
 
     <!-- Tabler UI JS -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
 
     <!-- Custom JS for search functionality -->
-    <script>
-        $(document).ready(function () {
-            $("#search").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $("#data-table tbody tr").filter(function () {
-                    // Show all rows if the search box is empty
-                    if (!value) {
-                        $(this).show();
-                        return;
-                    }
-                    // Otherwise, toggle row visibility based on the search value
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
     <!-- Custom JS for filtering rows -->
-    <script>
-        $(document).ready(function() {
-            var filterToggle = false;
-            var filterButton = $('#filterButton');
-
-            $('#filterButton').click(function() {
-                filterToggle = !filterToggle;
-
-                if (filterToggle) {
-                    $(this).removeClass('toggle-inactive').addClass('toggle-active');
-                    filterButton.find('.outline-icon').hide();
-                    filterButton.find('.fill-icon').show();
-                } else {
-                    $(this).removeClass('toggle-active').addClass('toggle-inactive');
-                    filterButton.find('.outline-icon').show();
-                    filterButton.find('.fill-icon').hide();
-                }
-
-                $('#data-table tbody tr').each(function() {
-                    var thirdColumn = $(this).find('td:nth-child(4)').text().trim();
-                    var fourthColumn = $(this).find('td:nth-child(5)').text().trim();
-
-                    if (filterToggle) {
-                        if (thirdColumn === '' && fourthColumn === '') {
-                            $(this).hide();
-                        } else {
-                            $(this).show();
-                        }
-                    } else {
-                        $(this).show();
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/filterNonEmpty.js') }}"></script>
 
     <!-- Custom JS for copying table content -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize clipboard.js
-            var clipboard = new ClipboardJS('#copyToClipboard', {
-                text: function(trigger) {
-                    var headerCells = document.querySelectorAll('#table-header th');
-                    var headerData = Array.from(headerCells).map(cell => cell.innerText);
-                    var rows = document.querySelectorAll('#data-table tr');
-                    var data = [];
-
-                    // Add header data to the beginning of the data array
-                    data.push(headerData.join('\t'));
-
-                    for (var i = 0; i < rows.length; i++) {
-                        var cells = rows[i].querySelectorAll('td');
-                        var rowData = [];
-                        for (var j = 0; j < cells.length; j++) {
-                            rowData.push(cells[j].innerText);
-                        }
-                        data.push(rowData.join('\t'));
-                    }
-
-                    return data.join('\n');
-                }
-            });
-
-            var originalIcon = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
-                <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
-                </svg>
-            `;
-
-            // Change the button color on success
-            clipboard.on('success', function(e) {
-                e.clearSelection();
-                var copyButton = document.getElementById('copyToClipboard');
-
-                // Add a class for the transition effect
-                copyButton.classList.add('btn-transition');
-
-                // Update button style and text
-                copyButton.classList.remove('btn-secondary');
-                copyButton.classList.add('btn-success');
-                copyButton.innerHTML = 'Copied!';
-
-                // Restore the original icon and style after a delay
-                setTimeout(function() {
-                    copyButton.innerHTML = originalIcon + 'Copy to Clipboard';
-                    copyButton.classList.remove('btn-success');
-                    copyButton.classList.add('btn-secondary');
-
-                    // Remove the transition class
-                    copyButton.classList.remove('btn-transition');
-                }, 1000);
-            });
-
-            clipboard.on('error', function(e) {
-                e.clearSelection();
-                var copyButton = document.getElementById('copyToClipboard');
-
-                // Add a class for the transition effect
-                copyButton.classList.add('btn-transition');
-
-                // Update button style and text
-                copyButton.classList.remove('btn-secondary');
-                copyButton.classList.add('btn-danger');
-                copyButton.innerHTML = 'Copy Error!';
-                setTimeout(function() {
-                    copyButton.innerHTML = 'Copy to Clipboard';
-                    copyButton.classList.remove('btn-danger');
-                    copyButton.classList.add('btn-secondary');
-
-                    // Remove the transition class
-                    copyButton.classList.remove('btn-transition');
-                }, 1000);
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/copyTable.js') }}"></script>
 </body>
 </html>

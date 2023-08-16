@@ -6,7 +6,6 @@ from pathlib import Path
 import traceback
 import uuid
 import json
-from urllib.parse import unquote
 from collections import OrderedDict
 import timeago, datetime
 import shutil
@@ -56,15 +55,15 @@ def index(key = None):
             mappings_file = request.files.get('mappings')
 
             # Save the uploaded files locally
-            clickprofiler_filepath = save_uploaded_file_2_location(clickprofiler_file, UPLOADS_DIRECTORY)
-            mappings_filepath = save_uploaded_file_2_location(mappings_file, UPLOADS_DIRECTORY)
+            clickprofiler_filepath = save_file_2_location(clickprofiler_file, UPLOADS_DIRECTORY)
+            mappings_filepath = save_file_2_location(mappings_file, UPLOADS_DIRECTORY)
 
             #################################################################
             if request.form.get('savecheckbox') == 'on':
                 # Save the uploaded files to the saved directory
                 Path(os.path.join(SAVED_DIRECTORY, uuid_key)).mkdir(parents=True, exist_ok=True)
-                cp_loc = save_uploaded_file_2_location(clickprofiler_file, os.path.join(SAVED_DIRECTORY, uuid_key))
-                mp_loc = save_uploaded_file_2_location(mappings_file, os.path.join(SAVED_DIRECTORY, uuid_key))
+                cp_loc = save_file_2_location(clickprofiler_file, os.path.join(SAVED_DIRECTORY, uuid_key))
+                mp_loc = save_file_2_location(mappings_file, os.path.join(SAVED_DIRECTORY, uuid_key))
 
                 # cp_loc = f'{SAVED_DIRECTORY}/{uuid_key}/{extract_filename(clickprofiler_filepath)}'
                 # mp_loc = f'{SAVED_DIRECTORY}/{uuid_key}/{extract_filename(mappings_filepath)}'
@@ -111,7 +110,7 @@ def index(key = None):
     ordered_saved_mappings = OrderedDict(saved_mappings)
     return render_template('index.html', message=message, saved_mappings=ordered_saved_mappings, error=error)
 
-def save_uploaded_file_2_location(uploaded_file, location):
+def save_file_2_location(uploaded_file, location):
     if uploaded_file:
         # print(uploaded_file.read())  # Read and print the content
         uploaded_file.seek(0)  # Reset the file pointer
@@ -188,7 +187,7 @@ def mapping_function(clickprofiler_filepath, mappings_filepath):
 
 # Call this route when a saved mapping card is clicked from the index page
 @app.route('/saved-mappings/<string:key>', methods=['GET'])
-def perform_mapping(key):
+def saved_mapping(key):
     if request.method == 'GET':
         cp_filename = request.args.get('cp')
         mp_filename = request.args.get('mp')

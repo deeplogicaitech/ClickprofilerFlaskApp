@@ -2,196 +2,11 @@
 <html>
 <head>
     <title>Clickprofiler Mapper</title>
-    <!-- Tabler UI CSS and JS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
-    <style>
-        @import url('https://rsms.me/inter/inter.css');
-        :root {
-            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
-        }
-    </style>
-    <style>
-        :root {
-            font-size: 15px;
-            overflow-y: hidden;
-        }
 
-        .alert {
-            transition: opacity 0.5s;
-            z-index: 1000;
-            position: absolute;
-            top: 90%;
-        }
-
-        .alert.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Initially hide the error card */
-        #error-card {
-            display: none;
-        }
-
-        .wobble {
-            /* Start the shake animation and make the animation last for 0.5 seconds */
-            animation: wobble 0.2s ease-in-out 0s 2;
-
-            /* When the animation is finished, start again */
-            animation-iteration-count: 1;
-        }
-
-        @keyframes wobble {
-            0% {
-                margin-left: 0rem;
-            }
-            25% {
-                margin-left: 0.5rem;
-            }
-            75% {
-                margin-left: -0.5rem;
-            }
-            100% {
-                margin-left: 0rem;
-            }
-        }
-
-        u {
-            text-decoration-style: dotted;
-            text-underline-position: under;
-        }
-
-        /* .scrollable-content {
-            overflow: overlay;
-            scrollbar-width: none;
-            max-height: 350px;
-        }
-
-        .scrollable-content::-webkit-scrollbar {
-            display: none;
-        } */
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: start;
-            align-items: center;
-            height: 100vh; /* Take full viewport height */
-            padding-top: 1rem; /* Space on top */
-            padding-bottom: 1rem; /* Space on bottom */
-            overflow-y: hidden;
-        }
-
-        .upload-files-card,
-        .row-deck {
-            width: 100%;
-            max-width: 50%; /* You can adjust the width as needed */
-        }
-
-        .row-deck {
-            /* margin-top: auto; Push it to the bottom */
-            overflow-y: auto;
-        }
-
-        .box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        #content {
-            overflow-y: auto;
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0, black var(--top-mask-size, 0), black calc(100% - var(--bottom-mask-size, 0)), transparent 100%);
-            mask-image: linear-gradient(to bottom, transparent 0, black var(--top-mask-size, 0), black calc(100% - var(--bottom-mask-size, 0)), transparent 100%);
-            --top-mask-size: 0px;
-            --bottom-mask-size: 0px;
-        }
-
-        #content.is-top-overflowing {
-            --top-mask-size: 60px !important;
-        }
-
-        #content.is-bottom-overflowing {
-            padding-bottom: 20px;
-            --bottom-mask-size: 60px !important;
-        }
-
-        #deleteButton {
-            visibility: hidden;
-            z-index: 1000;
-        }
-
-        .hover-card:hover #deleteButton {
-            visibility: visible;
-        }
-
-        #deleteButton > a {
-            --tblr-badge-padding-x: 1em;
-            --tblr-badge-padding-y: 0.5em;
-            transition: background-color 100ms linear;
-        }
-
-        #deleteButton > a:hover {
-            --tblr-bg-opacity: 1;
-            color: #fff !important;
-            background-color: rgba(var(--tblr-red-rgb), var(--tblr-bg-opacity)) !important;
-            text-decoration: none;
-        }
-
-        /* Styles for the divider container */
-        .hr-text {
-            position: relative;
-            cursor: pointer;
-        }
-
-        /* Styles for the content within the divider */
-        .divider-content {
-            display: flex;
-            align-items: center;
-        }
-
-        /* Styles for the divider text */
-        .divider-text {
-            margin-right: 0.4rem;
-            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Styles for the delete icon container */
-        .delete-icon-container {
-            width: 0;
-            overflow: hidden;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Styles for the delete icon */
-        .delete-icon {
-            display: inline-block;
-            font-size: 1.2rem;
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Show the delete icon container and move the delete icon on hover */
-        .divider-content:hover .divider-text {
-            color: transparent; /* Hide the text */
-        }
-
-        .divider-content:hover .divider-text {
-            color: #d63939;
-        }
-
-        .divider-content:hover .delete-icon-container {
-            width: 24px;  /* approximate width of the delete icon, you can adjust this value */
-        }
-
-        .divider-content:hover .delete-icon {
-            transform: translateX(0);
-        }
-
-        .hr-text.hr-text-right:before {
-            cursor: default;
-        }
-
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css"> <!-- Tabler UI CSS -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- Favicon -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"> <!-- Custom CSS for index.html page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}"> <!-- Inter custom font -->
 </head>
 
 <body>
@@ -234,7 +49,7 @@
             <div class="hr-text hr-text-right" style="margin: 2rem 0 1rem 0;">
                 <div class="divider-content">
                     <a href="{{ url_for('delete_all_mappings') }}" style="text-decoration: none; color: #616876;">
-                        <div class="divider-text">Previous Mappings</div>
+                        <div class="divider-text" style="text-decoration: underline; text-decoration-style: dotted; text-underline-position: under;">Previous Mappings</div>
                     </a>
                     <div class="delete-icon-container">
                         <a href="{{ url_for('delete_all_mappings') }}" style="color: inherit;">
@@ -268,7 +83,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{{ url_for('perform_mapping', key=key, cp=mapping.cp_filename, mp=mapping.mp_filename) }}" class="stretched-link"></a>
+                    <a href="{{ url_for('saved_mapping', key=key, cp=mapping.cp_filename, mp=mapping.mp_filename) }}" class="stretched-link"></a>
                 </div>
                 {% endfor %}
 
@@ -300,96 +115,21 @@
     </div>
 
     <!-- JS to redirect to homepage if page is refreshed -->
-    <script>
-        // Function to check if the page is refreshed
-        function isPageRefreshed() {
-            return performance.navigation.type === 1;
-        }
-
-        // Redirect to the home page if the page is refreshed
-        if (isPageRefreshed()) {
-            window.location.href = "/"; // Replace "/" with the URL of your home page
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/refreshPage.js') }}"></script>
 
     <!-- Tabler UI JS -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
-    <script>
-        // Show the error card and then remove it after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            var errorCard = document.getElementById('error-card');
-            if (errorCard) {
-                errorCard.style.display = 'block'; // Show the error card
-                setTimeout(function() {
-                    errorCard.classList.add('fade-out'); // Apply the fade-out class
-                    setTimeout(function() {
-                        errorCard.parentNode.removeChild(errorCard); // Remove the card from its parent node
-                    }, 500);
-                }, 5000);
-            }
-        });
-    </script>
-    <script>
-        // Add client-side validation for file inputs
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInputs = document.querySelectorAll('input[type="file"]');
 
-            fileInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    const file = this.files[0];
-                    const allowedExtensions = ['csv', 'xls', 'xlsx'];
-                    const fileExtension = file.name.split('.').pop().toLowerCase();
+    <!-- Custom JS for showing a popup error card -->
+    <script src="{{ url_for('static', filename='js/errorCard.js') }}"></script>
 
-                    if (!allowedExtensions.includes(fileExtension)) {
-                        alert('Invalid file format. Please upload CSV or Excel files only.');
-                        this.value = ''; // Clear the input field to allow reselection
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-        function setClasses(el) {
-        const isScrollable = el.scrollHeight > el.clientHeight;
+    <!-- Client side input file check -->
+    <script src="{{ url_for('static', filename='js/inputFileChecker.js') }}"></script>
 
-        // GUARD: If element is not scrollable, remove all classes
-        if (!isScrollable) {
-            el.classList.remove('is-bottom-overflowing', 'is-top-overflowing');
-            return;
-        }
+    <!-- JS to feather out the top and bottom of a scrolling list -->
+    <script src="{{ url_for('static', filename='js/featherScrollingList.js') }}"></script>
 
-        // Otherwise, the element is overflowing!
-        // Now we just need to find out which direction it is overflowing to (can be both)
-        const isScrolledToBottom = el.scrollHeight <= el.clientHeight + el.scrollTop;
-        const isScrolledToTop = isScrolledToBottom ? false : el.scrollTop === 0;
-        el.classList.toggle('is-bottom-overflowing', !isScrolledToBottom);
-        el.classList.toggle('is-top-overflowing', !isScrolledToTop);
-        }
-
-        document.querySelector('#content').addEventListener('scroll', (e) => {
-        const el = e.currentTarget;
-        setClasses(el);
-        });
-
-        setClasses(document.querySelector('#content'));
-    </script>
-
-    <script>
-        // JavaScript to update the text on hover
-        const divider = document.querySelector('.hr-text');
-        const dividerContent = document.querySelector('.divider-content');
-        const dividerText = dividerContent.querySelector('.divider-text');
-
-        const originalText = 'Previous Mappings';
-        const hoverText = 'Delete all mappings';
-
-        dividerContent.addEventListener('mouseover', () => {
-            dividerText.textContent = hoverText;
-        });
-
-        dividerContent.addEventListener('mouseout', () => {
-            dividerText.textContent = originalText;
-        });
-    </script>
+    <!-- JS animate 'Delete all mappings' button -->
+    <script src="{{ url_for('static', filename='js/deleteAllMappingsButton.js') }}"></script>
 </body>
 </html>

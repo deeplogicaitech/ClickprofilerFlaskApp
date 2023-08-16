@@ -1,6 +1,5 @@
 uploads/
 mapped_clickprofiler.xlsx
-.gitingore
 templates/index_bak.html
 templates/table_bak.html
 __pycache__/
@@ -8,3 +7,4 @@ __pycache__/
 temp/
 saved/
 saved_mappings.json
+env/
