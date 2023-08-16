@@ -49,7 +49,7 @@
             <div class="hr-text hr-text-right" style="margin: 2rem 0 1rem 0;">
                 <div class="divider-content">
                     <a href="{{ url_for('delete_all_mappings') }}" style="text-decoration: none; color: #616876;">
-                        <div class="divider-text" style="text-decoration: underline; text-decoration-style: dotted; text-underline-position: under;">Previous Mappings</div>
+                        <div class="divider-text" style="text-decoration: underline; text-decoration-style: dotted; text-underline-position: under;">Saved Mappings</div>
                     </a>
                     <div class="delete-icon-container">
                         <a href="{{ url_for('delete_all_mappings') }}" style="color: inherit;">
@@ -129,7 +129,7 @@
     <!-- JS to feather out the top and bottom of a scrolling list -->
     <script src="{{ url_for('static', filename='js/featherScrollingList.js') }}"></script>
 
-    <!-- JS animate 'Delete all mappings' button -->
+    <!-- JS to animate 'Delete all mappings' button -->
     <script src="{{ url_for('static', filename='js/deleteAllMappingsButton.js') }}"></script>
 </body>
 </html>
