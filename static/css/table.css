@@ -1,0 +1,97 @@
+:root {
+    font-size: 15px;
+}
+
+/* Wrap long text */
+td {
+    word-wrap: break-word;
+    font-size: 12px;
+}
+
+/* Set fixed width for columns */
+table {
+    table-layout: fixed;
+}
+
+/* Set a fixed height and enable vertical scrolling for the table container */
+.card {
+    max-height: calc(100vh - 155px); /* Set the desired height as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+
+}
+
+.table {
+    margin-bottom: 0;
+    border-collapse: collapse;
+}
+
+.alert {
+    padding: 10px 15px 15px 15px;
+}
+
+.alert-title {
+    margin-bottom: 0.6rem;
+}
+
+.btn-secondary {
+    background-color: #1d273b;
+    --tblr-btn-hover-bg: #5d6779;
+}
+
+.form-control {
+    border-color: #d2d2d2;
+}
+
+.container {
+    max-width: 75%;
+}
+
+.inner-table::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+    scrollbar-gutter: none;
+}
+
+.inner-table {
+    scrollbar-width: none; /* Firefox */
+}
+
+.table-secondary {
+    --tblr-table-bg: #e2e8f0;
+    --tblr-table-striped-bg: #e2e8f0;
+    --tblr-table-color: #1d273b9e;
+    --tblr-table-striped-color: #1d273b9e;
+}
+
+u {
+    text-decoration-style: dotted;
+    text-underline-position: under;
+}
+
+.toggle-inactive {
+    color: var(--tblr-primary-bg);
+    background-color: #f1f5f9;
+    border-color: #f1f5f9;
+}
+
+.toggle-inactive:hover {
+    color: var(--tblr-primary-bg);
+    background-color: #f1f5f9;
+    border-color: #f1f5f9;
+}
+
+.toggle-active {
+    color: #0054a6;
+    background-color: #e9f0f9;
+    border-color: #0054a6;
+}
+
+.toggle-active:hover {
+    color: #0054a6;
+    background-color: #e9f0f9;
+    border-color: #0054a6;
+}
+
+/* Add these styles to your CSS */
+.btn-transition {
+    transition: background-color 0.5s, opacity 0.5s;
+}
