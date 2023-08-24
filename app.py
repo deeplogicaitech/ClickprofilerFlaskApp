@@ -9,6 +9,7 @@ import json
 from collections import OrderedDict
 import timeago, datetime
 import shutil
+from fuzzywuzzy import fuzz
 import re
 
 app = Flask(__name__)
@@ -31,9 +32,12 @@ def extract_filename(path):
     else:
         return None
 
-@app.template_filter('timeago')
+@app.template_filter('timeago') # This decorator registers the function as a template filter
 def timeago_filter(timestamp):
+    # Retrieve the stored timestamp from the saved_mappings.json file
     stored_timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+
+    # Check if the stored timestamp is older than 1 day, if yes, return the date in the format dd month yyyy, else return the timeago string
     if timedelta := datetime.datetime.now() - stored_timestamp:
         if timedelta.days > 0:
             return datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").strftime("%d %b %Y")
@@ -64,13 +68,12 @@ def index(key = None):
                 Path(os.path.join(SAVED_DIRECTORY, uuid_key)).mkdir(parents=True, exist_ok=True)
                 cp_loc = save_file_2_location(clickprofiler_file, os.path.join(SAVED_DIRECTORY, uuid_key))
                 mp_loc = save_file_2_location(mappings_file, os.path.join(SAVED_DIRECTORY, uuid_key))
-
-                # cp_loc = f'{SAVED_DIRECTORY}/{uuid_key}/{extract_filename(clickprofiler_filepath)}'
-                # mp_loc = f'{SAVED_DIRECTORY}/{uuid_key}/{extract_filename(mappings_filepath)}'
+                mappings_name = request.form.get('mappingName')
 
                 new_entry = {
                     'cp_filename': extract_filename(clickprofiler_filepath),
                     'mp_filename': extract_filename(mappings_filepath),
+                    'mappings_name': mappings_name,
                     'timestamp': str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 }
 
@@ -123,15 +126,15 @@ def save_file_2_location(uploaded_file, location):
 def process_clickprofiler_file(clickprofiler_file):
     with open(clickprofiler_file, encoding = 'utf-8') as fd:
         reader=csv.reader(fd)
-        desc_index=[]
+
+        # Iterate through the rows and find the first and second row (First row is the headers and second row is the data)
         for idx, row in enumerate(reader):
             if idx == 0:
                 first_row = row
-                for key in range(26, len(row), 2):
-                        desc_index.append(first_row[key].partition('(')[0].strip())
             if idx == 1:
                 second_row = row
 
+    # Create a list of lists containing the german description, key and value
     clickprofiler_list = []
     for idx in range(26, len(first_row), 2):
         clickprofiler_list += [[first_row[idx].partition('(')[0].strip(), second_row[idx], second_row[idx+1], False]]
@@ -153,20 +156,48 @@ def process_mappings_file(mappings_file):
             labels.append(kv)
     return labels
 
+
+'''
+Mapping logic
+
+    Clickprofiler                   Mappings csv
+      index.csv     ┌──────────┐
+┌───────────────────┤          ├───────────────────┐
+│                   │          │                   │
+│  German Key       │  German  │  English Label    │
+│                   │  Desc    │                   │
+│  Gerrman Value    │          │  Used Flag        │
+│                   │          │                   │
+│  Used Flag        │          │                   │
+│                   │          │                   │
+└───────────────────┤          ├───────────────────┘
+                    └──────────┘
+'''
+
 def map_keys_and_values(clickprofiler_list, mappings_data):
+    '''
+    Idea is that we are doing an intersection of the clickprofiler list and the mappings data using the german description. Because that is the only common field to uniquely identify a field and its corresponding label. We are also using a used flag to make sure that a field is not used more than once (in case there are multiple fields with the same german description, and there are a few of those).
+    '''
     mapped_data = []
     total_mapped_fields = 0
 
+    # mappings_data is a list of dictionaries containing the label, description and used flag
     for labelkv in mappings_data:
+
+        # Iterate through the clickprofiler list and find a match for the label using the german description
         for item in clickprofiler_list:
-            if item[0] in labelkv['desc'] and not labelkv['used'] and not item[3]:
+            # item[0] is the german description in the clickprofiler list and labelkv['desc'] is the german description in the mappings data
+
+            # Fuzzy match the German description in the clickprofiler list and the mappings data. If the match is greater than 90, then we have a match
+            if (fuzz.partial_ratio(item[0],labelkv['desc']) > 90) and not labelkv['used'] and not item[3]:
                 templ = [labelkv['lbl'], item[0], item[1], item[2]]
                 mapped_data.append(templ)
                 total_mapped_fields += 1
-                labelkv['used'] = True
-                item[3] = True
+                labelkv['used'] = True # Set the used flag for the field in the mappings data to True so that it is not used again
+                item[3] = True # Set the used flag for the field in the clickprofiler list to True so that it is not used again
                 break
 
+        # If no match was found, add the label to mapped_data list with the german description and '-' for the key and value denoting that it was not found
         if not labelkv['used']:
             temp = [labelkv['lbl'], labelkv['desc'], '-', '-']
             labelkv['used'] = True
@@ -222,6 +253,7 @@ def saved_mapping(key):
 @app.route('/delete-mapping/<string:key>', methods=['GET'])
 def delete_mapping(key):
     if request.method == 'GET':
+        # Get the filenames from the query string
         cp_filename = request.args.get('cp')
         mp_filename = request.args.get('mp')
 

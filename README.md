@@ -7,11 +7,13 @@ Clickprofiler Flask app for DLAI which maps the clickprofiler file to the mappin
 * Flask
 * Pandas
 
-#### Install the pre-requisites using requirements.txt `pip install -r requirements.txt` or manually install the following using pip:
+Install the pre-requisites using requirements.txt `pip install -r requirements.txt` or manually install the following using pip:
 ```
 Flask==2.2.3
 pandas==2.0.0
 openpypxl==3.1.2
+timeago==1.0.16
+fuzzywuzzy==0.18.0
 ```
 
 # How to run

@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- Favicon -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"> <!-- Custom CSS for index.html page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}"> <!-- Inter custom font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> <!-- Animate.css -->
 </head>
 
 <body>
@@ -27,6 +28,10 @@
                     <input class="form-check-input" type="checkbox" id="saveFilesCheckbox" name="savecheckbox">
                     <span class="form-check-label">Save this mapping</span>
                 </label>
+                <div id="saveMappingInput" style="display: none;" class="input-group animate__animated animate__flipInX animate__faster">
+                    <span class="input-group-text">Mappings Name</span>
+                    <input type="text" class="form-control" name="mappingName" placeholder="Enter mapping name" autocomplete="off">
+                </div>
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">
@@ -69,7 +74,7 @@
                 <div class="card mb-1 hover-card shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
-                            <div class="badge bg-blue-lt mb-1">ID: {{ key[20:]|upper }}</div>
+                            <div class="badge bg-blue-lt mb-1">{{ mapping.mappings_name }}</div>
                             <div class="text-muted" style="font-size: smaller;">{{ mapping.timestamp|timeago }}</div>
                         </div>
                         <div id="dlContainer" class="d-flex justify-content-between">
@@ -131,5 +136,9 @@
 
     <!-- JS to animate 'Delete all mappings' button -->
     <script src="{{ url_for('static', filename='js/deleteAllMappingsButton.js') }}"></script>
+
+    <!-- JS for animating Mappings filename input box -->
+    <script src="{{ url_for('static', filename='js/mappingsFilename.js') }}"></script>
+
 </body>
 </html>
