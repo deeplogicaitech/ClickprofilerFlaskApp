@@ -33,7 +33,8 @@
                 <!--Card displaying total fields info-->
                 <div class="alert alert-success shadow-sm">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="alert-title">Mapped {{ mapped_fields }} of {{ total_fields }} field(s)</span>
+                        <span class="alert-title">Mapped {{ mapped_fields }} of {{ total_fields }} fields</span>
+                        </span>
                         <div class="d-flex align-items-between" style="padding-top: 5px;">
 
                             <!-- Search box -->
@@ -73,9 +74,15 @@
                     <!-- Display file info -->
                     <div class="text-muted d-flex justify-content-between align-items-end">
                         <div>
-                            <span><b>Clickprofiler file:</b> {{ cp_file }}</span>
-                            <br>
-                            <span><b>Mappings file:</b> {{ map_file }}</span>
+                            <div><b>Clickprofiler file:</b> {{ cp_file }}</div>
+                            <div><b>Mappings file:</b> {{ map_file }}
+                                {% if empty_labels %}
+                                <span class="status status-yellow mx-1">
+                                    <span class="status-dot status-dot-animated" style="--tblr-status-size: 0.5em"></span>
+                                    {{ empty_labels }} empty {{ 'label' if empty_labels == 1 else 'labels' }}!
+                                </span>
+                                {% endif %}
+                            </div>
                         </div>
                         <button id="filterButton" class="btn ml-2 toggle-inactive" style="height: 25px; width: 170px; border-radius: 60px">
                             <i class="outline-icon">
@@ -132,6 +139,14 @@
                             {% for row in table_content %}
                             {% if row[2] == '-' and row[3] == '-' %}
                             <tr class="table-secondary">
+                                <td style="width: 3rem;">{{ loop.index }}</td>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>{{ row[3] }}</td>
+                            </tr>
+                            {% elif row[0] == '' %}
+                            <tr class="table-warning">
                                 <td style="width: 3rem;">{{ loop.index }}</td>
                                 <td>{{ row[0] }}</td>
                                 <td>{{ row[1] }}</td>

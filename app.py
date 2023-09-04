@@ -18,8 +18,6 @@ app = Flask(__name__)
 UPLOADS_DIRECTORY = 'uploads'
 SAVED_DIRECTORY = 'saved'
 
-uuid_key = None
-
 # Create the uploads directory if it doesn't exist
 Path(UPLOADS_DIRECTORY).mkdir(parents=True, exist_ok=True)
 Path(SAVED_DIRECTORY).mkdir(parents=True, exist_ok=True)
@@ -92,13 +90,13 @@ def index(key = None):
             #################################################################
 
             # From hereon, we actually use the saved files
-            mapped_data, mapped_fields, total_fields = mapping_function(clickprofiler_filepath, mappings_filepath)
+            mapped_data, mapped_fields, total_fields, empty_labels = mapping_function(clickprofiler_filepath, mappings_filepath)
 
             # Create a Pandas dataframe from the mapped data and save it to an Excel file
             mapped_data_df = pd.DataFrame(mapped_data, columns = ['Label', 'German Desc', 'German Key', 'German Value'])
             mapped_data_df.to_excel('mapped_clickprofiler.xlsx', index=False)
 
-            return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, cp_file=extract_filename(clickprofiler_filepath), map_file=extract_filename(mappings_filepath))
+            return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, empty_labels=empty_labels, cp_file=extract_filename(clickprofiler_filepath), map_file=extract_filename(mappings_filepath))
 
         except Exception as e:
             print(e)
@@ -179,6 +177,7 @@ def map_keys_and_values(clickprofiler_list, mappings_data):
     Idea is that we are doing an intersection of the clickprofiler list and the mappings data using the german description. Because that is the only common field to uniquely identify a field and its corresponding label. We are also using a used flag to make sure that a field is not used more than once (in case there are multiple fields with the same german description, and there are a few of those).
     '''
     mapped_data = []
+    empty_labels = 0
     total_mapped_fields = 0
 
     # mappings_data is a list of dictionaries containing the label, description and used flag
@@ -193,6 +192,8 @@ def map_keys_and_values(clickprofiler_list, mappings_data):
                 templ = [labelkv['lbl'], item[0], item[1], item[2]]
                 mapped_data.append(templ)
                 total_mapped_fields += 1
+                if not labelkv['lbl']:
+                    empty_labels += 1
                 labelkv['used'] = True # Set the used flag for the field in the mappings data to True so that it is not used again
                 item[3] = True # Set the used flag for the field in the clickprofiler list to True so that it is not used again
                 break
@@ -203,7 +204,7 @@ def map_keys_and_values(clickprofiler_list, mappings_data):
             labelkv['used'] = True
             mapped_data.append(temp)
 
-    return mapped_data, total_mapped_fields
+    return mapped_data, total_mapped_fields, empty_labels
 
 def mapping_function(clickprofiler_filepath, mappings_filepath):
     # Process the files as needed
@@ -211,10 +212,10 @@ def mapping_function(clickprofiler_filepath, mappings_filepath):
     labels = process_mappings_file(mappings_filepath)
 
     # Map German keys and values to English labels using the mappings data
-    mapped_data, mapped_fields = map_keys_and_values(clickprofiler_list, labels)
+    mapped_data, mapped_fields, empty_labels = map_keys_and_values(clickprofiler_list, labels)
     total_fields = len(mapped_data)
 
-    return mapped_data, mapped_fields, total_fields
+    return mapped_data, mapped_fields, total_fields, empty_labels
 
 # Call this route when a saved mapping card is clicked from the index page
 @app.route('/saved-mappings/<string:key>', methods=['GET'])
@@ -242,13 +243,13 @@ def saved_mapping(key):
             return render_template('index.html', error='Files not found')
 
         # From hereon, we actually use the saved files
-        mapped_data, mapped_fields, total_fields = mapping_function(cp_filepath, mp_filepath)
+        mapped_data, mapped_fields, total_fields, empty_labels = mapping_function(cp_filepath, mp_filepath)
 
         # Create a Pandas dataframe from the mapped data and save it to an Excel file
         mapped_data_df = pd.DataFrame(mapped_data, columns = ['Label', 'German Desc', 'German Key', 'German Value'])
         mapped_data_df.to_excel('mapped_clickprofiler.xlsx', index=False)
 
-        return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, cp_file=cp_filename, map_file=mp_filename)
+        return render_template('table.html', table_content=mapped_data, mapped_fields=mapped_fields, total_fields=total_fields, empty_labels=empty_labels, cp_file=cp_filename, map_file=mp_filename)
 
 @app.route('/delete-mapping/<string:key>', methods=['GET'])
 def delete_mapping(key):
