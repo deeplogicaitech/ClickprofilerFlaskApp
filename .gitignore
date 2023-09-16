@@ -8,3 +8,8 @@ temp/
 saved/
 saved_mappings.json
 env/
+openpv.csv
+pv.csv
+templates/tempCodeRunnerFile.html
+templates/openpv_copy.html
+templates/prevalidation.html

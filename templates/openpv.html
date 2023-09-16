@@ -1,0 +1,16 @@
+{% extends "pv_base.html" %}
+
+{% block table_row %}
+{% for row in form_data %}
+<tr class="form-row">
+    <!-- <td class="drag-icon">&nbsp;</td> -->
+    <td class="row-index text-muted">{{ loop.index }}</td>
+    <td><textarea type="text" class="form-control desc" name="name[]" placeholder="Name">{{ row[0] }}</textarea></td>
+    <td><input type="text" class="form-control" name="type[]" placeholder="Type" value="{{ row[1] }}"></td>
+    <td><textarea type="text" class="form-control monospace-textarea" name="equation[]" placeholder="Equation">{{ row[2] }}</textarea></td>
+    <td><textarea type="text" class="form-control desc" name="description[]" placeholder="Description">{{ row[3] }}</textarea></td>
+    <td><input type="text" class="form-control" name="group[]" placeholder="Group" value="{{ row[4] }}"></td>
+    <td><button type="button" class="btn btn-ghost-danger delete-row  badge badge-pill bg-red-lt custom-badge">Delete</button></td> <!-- Delete button -->
+</tr>
+{% endfor %}
+{% endblock %}

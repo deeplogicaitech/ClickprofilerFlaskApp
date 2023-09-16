@@ -1,0 +1,14 @@
+{% extends "pv_base.html" %}
+
+{% block table_row %}
+<tr class="form-row">
+    <!-- <td class="drag-icon">&nbsp;</td> -->
+    <td class="row-index text-muted">1</td>
+    <td><textarea type="text" class="form-control desc" name="name[]" placeholder="Name"></textarea></td>
+    <td><input type="text" class="form-control" name="type[]" placeholder="Type"></td>
+    <td><textarea type="text" class="form-control monospace-textarea" name="equation[]" placeholder="Equation"></textarea></td>
+    <td><textarea type="text" class="form-control desc" name="description[]" placeholder="Description"></textarea></td>
+    <td><input type="text" class="form-control" name="group[]" placeholder="Group"></td>
+    <td><button type="button" class="btn btn-ghost-danger delete-row badge badge-pill bg-red-lt custom-badge">Delete</button></td> <!-- Delete button -->
+</tr>
+{% endblock %}

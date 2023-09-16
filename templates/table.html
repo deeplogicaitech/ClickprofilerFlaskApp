@@ -10,6 +10,11 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- Favicon -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}"> <!-- Custom CSS for the table.html page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}"> <!-- Inter custom font -->
+    <style>
+        .tooltip {
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
     {% if table_content %}
@@ -112,22 +117,22 @@
                             <tr style="text-align: right;">
                                 <th style="width: 3rem;">#</th>
                                 <th>
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="English Label used for the fields">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="English Label used for the fields" style="cursor: default;">
                                         <u>LABEL</u>
                                     </span>
                                 </th>
                                 <th>
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="German description of the field">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="German description of the field" style="cursor: default;">
                                         <u>GERMAN DESC</u>
                                     </span>
                                 </th>
                                 <th>
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="German key text in the PDFs">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="German key text in the PDFs" style="cursor: default;">
                                         <u>GERMAN KEY</u>
                                     </span>
                                 </th>
                                 <th>
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="German value text in the PDFs">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="German value text in the PDFs" style="cursor: default;">
                                         <u>GERMAN VALUE</u>
                                     </span>
                                 </th>

@@ -1,5 +1,5 @@
 import csv
-from flask import Flask, render_template, request, send_file, redirect
+from flask import Flask, render_template, request, send_file, redirect, session, Response, make_response
 import os
 import pandas as pd
 from pathlib import Path
@@ -42,7 +42,11 @@ def timeago_filter(timestamp):
         else:
             return timeago.format(timestamp, datetime.datetime.now())
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('home.html')
+
+@app.route('/clickprofiler', methods=['GET', 'POST'])
 def index(key = None):
     message = None
     error = None
@@ -284,7 +288,7 @@ def delete_mapping(key):
             with open('saved_mappings.json', 'w') as json_file:
                 json.dump(saved_mappings, json_file, indent=2)
 
-        return redirect('/')
+        return redirect('/clickprofiler')
 
 @app.route('/delete-all-mappings', methods=['GET'])
 def delete_all_mappings():
@@ -297,7 +301,7 @@ def delete_all_mappings():
         if os.path.exists(SAVED_DIRECTORY):
             shutil.rmtree(SAVED_DIRECTORY, True)
 
-        return redirect('/')
+        return redirect('/clickprofiler')
 
 @app.route('/download_excel')
 def download_excel():
@@ -307,6 +311,51 @@ def download_excel():
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
+
+# form_data = []
+
+@app.route('/prevalidation', methods=['GET', 'POST'])
+def prevalidation():
+    if request.method == "POST":
+        names = request.form.getlist("name[]")
+        types = request.form.getlist("type[]")
+        equations = request.form.getlist("equation[]")
+        descriptions = request.form.getlist("description[]")
+        groups = request.form.getlist("group[]")
+
+        form_data = list(zip(names, types, equations, descriptions, groups))
+
+        with open('pv.csv', 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(['name', 'type', 'equation', 'description', 'group'])
+            writer.writerows(form_data)
+
+    return render_template("pv.html")
+
+@app.route('/export_csv', methods=['GET', 'POST'])
+def export_csv():
+    return send_file(
+        'pv.csv',
+        mimetype="text/csv",
+        download_name="data.csv",
+        as_attachment=True
+    )
+
+@app.route('/open_csv', methods=['GET', 'POST'])
+def open_csv():
+    if request.method == "POST":
+        f = request.files['file']
+        f.save('openpv.csv')
+
+    # Read the csv file and save it to a list
+    with open('openpv.csv', encoding = 'utf-8') as fd:
+        reader=csv.reader(fd)
+        next(reader)
+        form_data = []
+        for idx, row in enumerate(reader):
+            form_data.append(row)
+
+    return render_template("openpv.html", form_data=form_data)
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5001)
